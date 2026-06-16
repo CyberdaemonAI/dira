@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- SEO -->
+  <title>DIRA: Dual-Intent Runtime Authorization | Behavioral Authorization for Agentic AI</title>
+  <meta name="description" content="DIRA is an independent research framework for runtime behavioral authorization in agentic AI systems. Explores why RBAC, ABAC, and existing frameworks fail to address intent-vs-action divergence in autonomous agents." />
+  <meta name="keywords" content="dual-intent runtime authorization, DIRA, agentic AI security, behavioral authorization, AI agent access control, runtime authorization, AI governance, intent verification, principal confusion, multi-agent delegation" />
+  <link rel="canonical" href="https://dira.cyberdaemon.ai" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://dira.cyberdaemon.ai" />
+  <meta property="og:title" content="DIRA: Dual-Intent Runtime Authorization" />
+  <meta property="og:description" content="Independent research on behavioral authorization for agentic AI systems. Why existing frameworks miss the control point that matters." />
+  <meta property="og:site_name" content="cyberdaemon.ai" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="DIRA: Dual-Intent Runtime Authorization" />
+  <meta name="twitter:description" content="Independent research on behavioral authorization for agentic AI systems. Why existing frameworks miss the control point that matters." />
+
+  <!-- Schema.org -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ScholarlyArticle",
+    "headline": "DIRA: Dual-Intent Runtime Authorization",
+    "description": "An independent research framework for runtime behavioral authorization in agentic AI systems, addressing the gap between static access control models and the behavioral complexity of autonomous agents.",
+    "url": "https://dira.cyberdaemon.ai",
+    "publisher": {
+      "@type": "Organization",
+      "name": "cyberdaemon.ai",
+      "url": "https://cyberdaemon.ai"
+    },
+    "inLanguage": "en-US",
+    "keywords": ["agentic AI", "runtime authorization", "behavioral authorization", "AI security", "access control", "intent verification"],
+    "creativeWorkStatus": "Active Research"
+  }
+  </script>
+
+  <style>
+    /* ===== DESIGN TOKENS ===== */
+    :root {
+      --bg:           #0a0a0f;
+      --bg-surface:   #0f0f1a;
+      --bg-card:      #131320;
+      --bg-card-alt:  #161626;
+      --border:       #1e1e35;
+      --border-accent:#2a2a4a;
+      --accent:       #6c63ff;
+      --accent-dim:   #4a44cc;
+      --accent-glow:  rgba(108, 99, 255, 0.15);
+      --accent-2:     #00d4aa;
+      --accent-2-dim: rgba(0, 212, 170, 0.12);
+      --warn:         #ff6b6b;
+      --warn-dim:     rgba(255, 107, 107, 0.12);
+      --text:         #e8e8f0;
+      --text-secondary: #a0a0c0;
+      --text-muted:   #606080;
+      --badge-200:    #1a3a2a;
+      --badge-200-text: #4adf8a;
+      --badge-300:    #1a2a3a;
+      --badge-300-text: #4ac8df;
+      --badge-400:    #2a1a3a;
+      --badge-400-text: #b46adf;
+      --mono:         "Courier New", "Consolas", monospace;
+      --sans:         -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --serif:        Georgia, "Times New Roman", serif;
+      --nav-h:        56px;
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      font-size: 17px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ===== STICKY NAV ===== */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      background: rgba(10, 10, 15, 0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+    }
+    .nav-brand {
+      font-family: var(--mono);
+      font-size: 0.85rem;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    .nav-links {
+      display: flex;
+      gap: 0;
+      list-style: none;
+    }
+    .nav-links a {
+      display: block;
+      padding: 0 1rem;
+      height: var(--nav-h);
+      line-height: var(--nav-h);
+      font-size: 0.82rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      transition: color 0.2s;
+    }
+    .nav-links a:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    /* ===== LAYOUT ===== */
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 1.5rem;
+    }
+    section {
+      padding: 6rem 0;
+    }
+    section + section {
+      border-top: 1px solid var(--border);
+    }
+
+    /* ===== SECTION BADGE ===== */
+    .badge {
+      display: inline-block;
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 0.2em 0.6em;
+      border-radius: 3px;
+      text-transform: uppercase;
+      margin-bottom: 1.25rem;
+    }
+    .badge-200 { background: var(--badge-200); color: var(--badge-200-text); }
+    .badge-300 { background: var(--badge-300); color: var(--badge-300-text); }
+    .badge-400 { background: var(--badge-400); color: var(--badge-400-text); }
+
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3, h4 {
+      line-height: 1.25;
+      color: var(--text);
+    }
+    h2 {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.02em;
+    }
+    h3 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      color: var(--text);
+    }
+    p {
+      color: var(--text);
+      margin-bottom: 1.25rem;
+    }
+    p:last-child { margin-bottom: 0; }
+
+    /* ===== HERO ===== */
+    #hero {
+      padding: 7rem 0 6rem;
+      border-top: none;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+    }
+    .hero-title {
+      font-size: clamp(2.8rem, 6vw, 4.2rem);
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+      margin-bottom: 1.75rem;
+      background: linear-gradient(135deg, #e8e8f0 0%, #a8a8d0 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-def {
+      font-size: 1.25rem;
+      color: var(--text);
+      max-width: 680px;
+      margin-bottom: 1rem;
+      font-weight: 400;
+    }
+    .hero-problem {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 620px;
+      margin-bottom: 3.5rem;
+    }
+
+    /* ===== STAT ROW ===== */
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      max-width: 680px;
+    }
+    .stat-cell {
+      background: var(--bg-card);
+      padding: 1.75rem 1.5rem;
+      text-align: center;
+    }
+    .stat-number {
+      display: block;
+      font-size: 2.6rem;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 0.4rem;
+      letter-spacing: -0.03em;
+    }
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.35;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== PROBLEM SECTION ===== */
+    .callout-block {
+      background: var(--warn-dim);
+      border-left: 3px solid var(--warn);
+      border-radius: 0 6px 6px 0;
+      padding: 1.25rem 1.5rem;
+      margin: 2rem 0;
+    }
+    .callout-block p {
+      color: var(--text);
+      margin: 0;
+      font-size: 1rem;
+    }
+    .callout-block strong {
+      color: var(--warn);
+    }
+
+    /* ===== FRAMEWORK PRINCIPLES ===== */
+    .principle-grid {
+      display: grid;
+      gap: 1.5rem;
+      margin-top: 2rem;
+    }
+    .principle-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 2rem;
+      position: relative;
+      transition: border-color 0.2s;
+    }
+    .principle-card:hover {
+      border-color: var(--border-accent);
+    }
+    .principle-number {
+      font-family: var(--mono);
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 0.6rem;
+    }
+    .principle-card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 1rem;
+      color: var(--text);
+    }
+    .principle-card p {
+      font-size: 0.95rem;
+      color: var(--text);
+      margin-bottom: 1rem;
+    }
+    .principle-card .why {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .principle-card .why strong {
+      color: var(--accent-2);
+      font-weight: 600;
+    }
+
+    /* ===== PRACTICAL EXAMPLE ===== */
+    .code-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.25rem 0;
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--text);
+      overflow-x: auto;
+    }
+    .code-block .token-key { color: var(--accent); }
+    .code-block .token-val { color: var(--accent-2); }
+    .code-block .token-comment { color: var(--text-muted); }
+
+    /* ===== GAP TABLE ===== */
+    .gap-table-wrap {
+      overflow-x: auto;
+      margin-top: 2rem;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+    }
+    thead th {
+      background: var(--bg-card-alt);
+      color: var(--text-secondary);
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 0.85rem 1rem;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      white-space: nowrap;
+    }
+    tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(108, 99, 255, 0.04); }
+    tbody td {
+      padding: 0.85rem 1rem;
+      color: var(--text);
+      vertical-align: top;
+      line-height: 1.5;
+    }
+    tbody td:first-child {
+      font-family: var(--mono);
+      font-size: 0.82rem;
+      color: var(--accent);
+      white-space: nowrap;
+    }
+    .gap-yes {
+      display: inline-block;
+      background: var(--accent-2-dim);
+      color: var(--accent-2);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15em 0.5em;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .gap-no {
+      display: inline-block;
+      background: var(--warn-dim);
+      color: var(--warn);
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15em 0.5em;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .gap-partial {
+      display: inline-block;
+      background: rgba(255, 180, 50, 0.12);
+      color: #ffa940;
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 0.15em 0.5em;
+      border-radius: 3px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    /* ===== ARCHITECTURE DIAGRAM ===== */
+    .arch-diagram {
+      margin: 2.5rem 0;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 2.5rem;
+      overflow-x: auto;
+    }
+    .arch-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+      flex-wrap: nowrap;
+      margin-bottom: 0.5rem;
+    }
+    .arch-node {
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      border-radius: 6px;
+      padding: 0.65rem 1.1rem;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      text-align: center;
+      min-width: 130px;
+      position: relative;
+    }
+    .arch-node.accent {
+      border-color: var(--accent);
+      background: rgba(108, 99, 255, 0.1);
+      color: var(--accent);
+    }
+    .arch-node.teal {
+      border-color: var(--accent-2);
+      background: var(--accent-2-dim);
+      color: var(--accent-2);
+    }
+    .arch-node.warn {
+      border-color: var(--warn);
+      background: var(--warn-dim);
+      color: var(--warn);
+    }
+    .arch-node.green {
+      border-color: #4adf8a;
+      background: var(--badge-200);
+      color: #4adf8a;
+    }
+    .arch-arrow {
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      padding: 0 0.4rem;
+      flex-shrink: 0;
+    }
+    .arch-arrow.down {
+      display: flex;
+      justify-content: center;
+      font-size: 1.1rem;
+      color: var(--text-muted);
+      padding: 0.25rem 0;
+    }
+    .arch-split {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      gap: 0;
+    }
+    .arch-branch {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .arch-leg {
+      width: 1px;
+      height: 28px;
+      background: var(--border-accent);
+      margin: 0 auto;
+    }
+    .arch-hline {
+      height: 1px;
+      width: 80px;
+      background: var(--border-accent);
+      margin-top: 14px;
+    }
+    .arch-spacer {
+      width: 80px;
+    }
+    .arch-legend {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 0.75rem;
+      font-size: 0.8rem;
+    }
+    .arch-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--text-secondary);
+    }
+    .arch-legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+      flex-shrink: 0;
+    }
+
+    /* ===== IMPLEMENTATION ===== */
+    .impl-grid {
+      display: grid;
+      gap: 1.25rem;
+      margin-top: 2rem;
+    }
+    .impl-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    .impl-card h3 {
+      font-size: 1rem;
+      margin-bottom: 0.6rem;
+      display: flex;
+      align-items: baseline;
+      gap: 0.6rem;
+    }
+    .impl-card h3 span.tag {
+      font-family: var(--mono);
+      font-size: 0.7rem;
+      color: var(--badge-400-text);
+      background: var(--badge-400);
+      padding: 0.15em 0.45em;
+      border-radius: 3px;
+      font-weight: 500;
+    }
+    .impl-card p {
+      font-size: 0.92rem;
+      color: var(--text);
+      margin-bottom: 0;
+    }
+
+    /* ===== RESEARCH STATUS ===== */
+    .status-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-accent);
+      border-radius: 8px;
+      padding: 2rem;
+      margin-top: 2rem;
+    }
+    .status-box h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 1rem;
+      font-family: var(--mono);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .open-questions {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .open-questions li {
+      padding: 0.6rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.92rem;
+      color: var(--text);
+      padding-left: 1.25rem;
+      position: relative;
+    }
+    .open-questions li:last-child { border-bottom: none; }
+    .open-questions li::before {
+      content: "?";
+      position: absolute;
+      left: 0;
+      color: var(--text-muted);
+      font-family: var(--mono);
+      font-size: 0.8rem;
+    }
+
+    /* ===== FOOTER ===== */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 3rem 0;
+      background: var(--bg-surface);
+    }
+    footer .container {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .footer-attr {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+    .footer-attr a {
+      color: var(--text-secondary);
+    }
+    .footer-brand {
+      font-family: var(--mono);
+      font-size: 0.78rem;
+      color: var(--accent);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* ===== UTILITIES ===== */
+    .text-accent { color: var(--accent); }
+    .text-teal   { color: var(--accent-2); }
+    .text-muted  { color: var(--text-muted); }
+
+    hr.section-rule {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 2rem 0;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 700px) {
+      nav { padding: 0 1rem; }
+      .nav-links a { padding: 0 0.6rem; font-size: 0.72rem; }
+      h2 { font-size: 1.5rem; }
+      .stat-row { max-width: 100%; }
+      .stat-number { font-size: 2rem; }
+      .arch-diagram { padding: 1.5rem 1rem; }
+      .arch-node { min-width: 100px; font-size: 0.74rem; padding: 0.55rem 0.75rem; }
+    }
+  </style>
+</head>
+
+<body>
+
+<!-- ===== NAV ===== -->
+<nav>
+  <span class="nav-brand">DIRA</span>
+  <ul class="nav-links">
+    <li><a href="#problem">Problem</a></li>
+    <li><a href="#framework">Framework</a></li>
+    <li><a href="#gap">Gap</a></li>
+    <li><a href="#architecture">Architecture</a></li>
+    <li><a href="#implementation">Implementation</a></li>
+  </ul>
+</nav>
+
+
+<!-- ===== HERO ===== -->
+<section id="hero">
+  <div class="container">
+    <p class="hero-eyebrow">Independent Research &mdash; Behavioral Authorization &mdash; Agentic AI</p>
+    <!-- Note: &mdash; used in decorative eyebrow only; no em dashes in body text -->
+
+    <h1 class="hero-title">Dual-Intent Runtime Authorization</h1>
+
+    <p class="hero-def">
+      DIRA is a framework for authorizing AI agent actions at runtime, verified against declared intent, not just assigned role.
+    </p>
+    <p class="hero-problem">
+      The gap: static access control cannot distinguish a read-access agent summarizing a document from one exfiltrating it. The action is the same. The intent is not. No current framework makes enforcement decisions at that boundary.
+    </p>
+
+    <div class="stat-row">
+      <div class="stat-cell">
+        <span class="stat-number">26</span>
+        <span class="stat-label">Frameworks analyzed</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-number">0</span>
+        <span class="stat-label">With behavioral authorization</span>
+      </div>
+      <div class="stat-cell">
+        <span class="stat-number">1</span>
+        <span class="stat-label">Control plane that addresses it</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== PROBLEM ===== -->
+<section id="problem">
+  <div class="container">
+    <span class="badge badge-200">200-Level</span>
+    <h2>Why Existing Authorization Fails for AI Agents</h2>
+
+    <p>
+      Role-based access control (RBAC) and attribute-based access control (ABAC) were designed for human principals making deliberate, bounded requests. A user logs in, presents credentials, and requests a specific resource. The authorization model evaluates that request against a policy: does this principal, with these attributes, have permission for this action on this resource? The model assumes the principal is a human whose intent is implicit in the request itself. Requesting a file read means you want to read the file. Period.
+    </p>
+
+    <p>
+      Autonomous agents break that assumption completely. An agent with read access to a document corpus can perform fundamentally different operations under the same permission grant: summarizing content for a user query, building an index for a legitimate pipeline, or systematically staging data for exfiltration. The permission is identical. The authorization check passes in all three cases. The difference between a compliant agent and a compromised one is not visible at the policy evaluation layer, because the policy layer was never designed to see it.
+    </p>
+
+    <div class="callout-block">
+      <p><strong>The audit trap:</strong> "We log everything" is not authorization. Audit logging records what happened after the fact. The value of a control is its ability to prevent unauthorized action, not to document it. An authorization system that detects a data exfiltration event in the audit log has failed at the one thing authorization exists to do. The control point is before the action executes, not after it completes.</p>
+    </div>
+
+    <p>
+      The problem compounds in multi-agent systems. Modern agentic architectures involve orchestrators delegating tasks to subagents, tool-calling chains where a single user request fans out into dozens of downstream actions, and autonomous agents invoking other agents. At each delegation boundary, the original authorization context degrades. An orchestrator with user-delegated authority spawns a subagent that inherits that authority implicitly. That subagent may invoke a tool that was never contemplated in the original delegation. The permission chain grows. The intent verification chain does not exist. This is the principal confusion problem: the system cannot distinguish between an action the user authorized and an action that happened to fall within scope of what the user authorized, for reasons entirely unrelated to user intent.
+    </p>
+
+    <p>
+      The consequence is an authorization model that is technically functional and operationally blind. Agents pass every check because the checks were designed for actors who cannot disguise or misrepresent intent at the system level. Humans can, but they face monitoring, accountability structures, and legal liability. Agents face none of those. The behavioral control that compensates for absent legal and social accountability in human systems simply does not exist for autonomous agents in any current framework.
+    </p>
+  </div>
+</section>
+
+
+<!-- ===== FRAMEWORK ===== -->
+<section id="framework">
+  <div class="container">
+    <span class="badge badge-300">300-Level</span>
+    <h2>The DIRA Framework</h2>
+
+    <p>
+      DIRA defines three core principles for behavioral authorization. Together they close the control gap that static permission models leave open. Each principle corresponds to a specific failure mode in existing systems.
+    </p>
+
+    <div class="principle-grid">
+
+      <!-- PRINCIPLE 1 -->
+      <div class="principle-card">
+        <p class="principle-number">Principle 01</p>
+        <h3>Intent Declaration</h3>
+        <p>
+          Every agent action must carry a declared intent payload at invocation time. Before an agent calls a tool, accesses a resource, or invokes an API, it must declare what it is trying to accomplish, in a structured, machine-readable format. The declaration is not a comment or a log entry. It is a required input to the authorization decision.
+        </p>
+        <p>
+          The payload includes: the action type (read, write, transform, transmit), the target resource, the declared purpose (summarize, index, forward, archive), the originating task context, and the identity chain of any orchestrating agents above it in the call stack. This payload travels with the invocation, not separately, so it cannot be stripped or forged at the transport layer without detection.
+        </p>
+        <div class="why">
+          <strong>Why it matters:</strong> Authorization systems that cannot observe intent cannot distinguish compliant from non-compliant behavior when the action type is identical. Requiring declaration creates an observable signal. It also creates accountability: a declared purpose that does not match observed reach is a specific, auditable anomaly, not an ambiguous behavioral pattern.
+        </div>
+      </div>
+
+      <!-- PRINCIPLE 2 -->
+      <div class="principle-card">
+        <p class="principle-number">Principle 02</p>
+        <h3>Dual Verification</h3>
+        <p>
+          Authorization checks declared intent against observed scope reach, in addition to checking role membership. The first check is traditional: does this principal have permission to perform this action type on this resource? The second check is new: does the observed resource access pattern match what the declared intent would predict?
+        </p>
+        <p>
+          An agent declaring "summarize document for user query" should access a bounded set of resources consistent with that task. If the observed scope reach extends significantly beyond that set, accessing unrelated documents, external endpoints, or high-volume sequential reads inconsistent with a summarization task, the second check fails. The authorization engine does not need to classify the intent as malicious. It only needs to detect divergence between what was declared and what was observed.
+        </p>
+        <div class="why">
+          <strong>Why it matters:</strong> Single-dimension authorization (role membership only) cannot detect behavioral deviation within a permitted scope. Dual verification creates a second enforcement axis. An agent can pass the role check and fail the behavioral check. Both checks must pass. Neither alone is sufficient.
+        </div>
+      </div>
+
+      <!-- PRINCIPLE 3 -->
+      <div class="principle-card">
+        <p class="principle-number">Principle 03</p>
+        <h3>Invocation-Time Enforcement</h3>
+        <p>
+          The enforcement point is at invocation, not in the audit log. When an agent calls a tool or API, the DIRA authorization engine evaluates the intent declaration and the predicted scope profile before the call executes. A deny decision blocks the action. An anomaly signal routes to a monitoring or escalation path. The action does not proceed while authorization is unresolved.
+        </p>
+        <p>
+          This requires the enforcement point to sit between the agent and the tool or API, not downstream of it. In practice this means the DIRA engine is a sidecar, a gateway, or an SDK-level intercept, depending on the deployment model. The architectural requirement is that no tool call reaches its target without passing through the enforcement layer.
+        </p>
+        <div class="why">
+          <strong>Why it matters:</strong> Enforcement after the fact is not enforcement. A system that detects unauthorized behavior in a post-hoc audit has failed the agent it was supposed to constrain. Invocation-time enforcement is the only model where authorization actually functions as a control, not as a record of failures.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ===== GAP TABLE ===== -->
+<section id="gap">
+  <div class="container">
+    <span class="badge badge-300">300-Level</span>
+    <h2>The Gap in Current Frameworks</h2>
+
+    <p>
+      Several active frameworks address adjacent problems in agentic AI security. None of them define runtime intent verification as an enforceable control category. The table below maps what each framework addresses and where the gap remains.
+    </p>
+
+    <div class="gap-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Framework</th>
+            <th>What It Addresses</th>
+            <th>Workload Identity</th>
+            <th>Runtime Intent Check</th>
+            <th>Behavioral Enforcement</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>SPIFFE / SPIRE</td>
+            <td>Cryptographic workload identity, SVID issuance, federation across trust domains</td>
+            <td><span class="gap-yes">Yes</span></td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+          </tr>
+          <tr>
+            <td>Singapore MAS MGF</td>
+            <td>Principal hierarchy, scoped permission delegation, governance model for AI systems</td>
+            <td><span class="gap-partial">Partial</span></td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+          </tr>
+          <tr>
+            <td>OWASP NHI Top 10</td>
+            <td>Non-human identity credential lifecycle, secret sprawl, privilege accumulation</td>
+            <td><span class="gap-yes">Yes</span></td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+          </tr>
+          <tr>
+            <td>OWASP Agentic AI Top 10</td>
+            <td>Privilege escalation risks, prompt injection, unsafe tool use patterns</td>
+            <td><span class="gap-partial">Partial</span></td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+          </tr>
+          <tr>
+            <td>NIST AI RMF</td>
+            <td>AI risk governance, measurement, organizational accountability structures</td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+          </tr>
+          <tr>
+            <td>EU AI Act</td>
+            <td>Compliance classification, transparency obligations, conformity assessment</td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+          </tr>
+          <tr>
+            <td style="color: var(--warn); font-style: italic;">None</td>
+            <td style="color: var(--text-secondary); font-style: italic;">Defines a runtime intent verification protocol as an enforceable control category</td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+            <td><span class="gap-no">No</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p style="margin-top: 1.5rem; font-size: 0.9rem; color: var(--text-secondary);">
+      SPIFFE/SPIRE provides the identity plane that a DIRA implementation would build on top of. Identity verification is a prerequisite, not a substitute. The frameworks listed above solve real problems. The point is not that they are wrong but that the gap they collectively leave is not incidental. It corresponds precisely to the authorization problem that is most acute in agentic AI systems.
+    </p>
+  </div>
+</section>
+
+
+<!-- ===== ARCHITECTURE ===== -->
+<section id="architecture">
+  <div class="container">
+    <span class="badge badge-300">300-Level</span>
+    <h2>Reference Architecture</h2>
+
+    <p>
+      The diagram below shows the DIRA control flow from agent action to execution. Every component is a conceptual category, not a prescribed implementation. The architecture is designed to be composable with existing infrastructure.
+    </p>
+
+    <div class="arch-diagram" role="img" aria-label="DIRA reference architecture flow diagram">
+
+      <!-- Row 1: Agent -->
+      <div class="arch-row">
+        <div class="arch-node accent">Agent</div>
+      </div>
+
+      <!-- Arrow down -->
+      <div class="arch-row" style="margin: 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="arch-leg"></div>
+          <div style="font-size:0.9rem;color:var(--text-muted);">&#x25BC;</div>
+        </div>
+      </div>
+
+      <!-- Row 2: Intent Declaration Layer -->
+      <div class="arch-row">
+        <div class="arch-node" style="min-width:260px;border-color:var(--accent-2);background:var(--accent-2-dim);color:var(--accent-2);">
+          Intent Declaration Layer
+        </div>
+      </div>
+
+      <!-- Small label -->
+      <div class="arch-row" style="margin: 0.4rem 0;">
+        <span style="font-size:0.72rem;color:var(--text-muted);font-family:var(--mono);">action_type · target · declared_purpose · context · principal_chain</span>
+      </div>
+
+      <!-- Arrow down -->
+      <div class="arch-row" style="margin: 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="arch-leg"></div>
+          <div style="font-size:0.9rem;color:var(--text-muted);">&#x25BC;</div>
+        </div>
+      </div>
+
+      <!-- Row 3: DIRA Authorization Engine -->
+      <div class="arch-row">
+        <div class="arch-node" style="min-width:260px;border-color:var(--accent);background:rgba(108,99,255,0.12);color:var(--accent);font-weight:700;">
+          DIRA Authorization Engine
+        </div>
+      </div>
+
+      <!-- Branching arrows -->
+      <div class="arch-row" style="margin: 0; gap: 120px;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="arch-leg"></div>
+          <div style="font-size:0.9rem;color:var(--text-muted);">&#x25BC;</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="arch-leg"></div>
+          <div style="font-size:0.9rem;color:var(--text-muted);">&#x25BC;</div>
+        </div>
+      </div>
+
+      <!-- Row 4: Scope Check + Behavior Check -->
+      <div class="arch-row" style="gap: 2rem;">
+        <div class="arch-node teal" style="min-width:145px;">Scope Check</div>
+        <div class="arch-node warn" style="min-width:145px;">Behavior Check</div>
+      </div>
+
+      <!-- Sub-labels -->
+      <div class="arch-row" style="gap: 2rem; margin: 0.4rem 0;">
+        <span style="font-size:0.7rem;color:var(--text-muted);font-family:var(--mono);min-width:145px;text-align:center;">role · attribute · resource policy</span>
+        <span style="font-size:0.7rem;color:var(--text-muted);font-family:var(--mono);min-width:145px;text-align:center;">declared intent vs. observed reach</span>
+      </div>
+
+      <!-- Converging arrows -->
+      <div class="arch-row" style="margin: 0; gap: 120px;">
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="arch-leg"></div>
+          <div style="font-size:0.9rem;color:var(--text-muted);">&#x25BC;</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:center;">
+          <div class="arch-leg"></div>
+          <div style="font-size:0.9rem;color:var(--text-muted);">&#x25BC;</div>
+        </div>
+      </div>
+
+      <!-- Row 5: Grant/Deny + Anomaly Signal -->
+      <div class="arch-row" style="gap: 2rem;">
+        <div class="arch-node green" style="min-width:145px;">Grant / Deny</div>
+        <div class="arch-node warn" style="min-width:145px;">Anomaly Signal</div>
+      </div>
+
+      <!-- Arrow down from Grant/Deny -->
+      <div class="arch-row" style="margin: 0;">
+        <div style="display:flex;flex-direction:column;align-items:center;margin-left:-83px;">
+          <div class="arch-leg"></div>
+          <div style="font-size:0.9rem;color:var(--text-muted);">&#x25BC;</div>
+        </div>
+      </div>
+
+      <!-- Row 6: Action Executes -->
+      <div class="arch-row" style="margin-left:-83px;">
+        <div class="arch-node accent" style="min-width:145px;">Action Executes</div>
+      </div>
+
+      <!-- Legend -->
+      <div class="arch-legend">
+        <div class="arch-legend-item">
+          <div class="arch-legend-dot" style="background:rgba(108,99,255,0.5);border:1px solid var(--accent);"></div>
+          <span>DIRA core components</span>
+        </div>
+        <div class="arch-legend-item">
+          <div class="arch-legend-dot" style="background:var(--accent-2-dim);border:1px solid var(--accent-2);"></div>
+          <span>Intent + scope enforcement</span>
+        </div>
+        <div class="arch-legend-item">
+          <div class="arch-legend-dot" style="background:var(--warn-dim);border:1px solid var(--warn);"></div>
+          <span>Behavioral deviation detection</span>
+        </div>
+        <div class="arch-legend-item">
+          <div class="arch-legend-dot" style="background:var(--badge-200);border:1px solid #4adf8a;"></div>
+          <span>Authorized execution path</span>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top: 2rem;">Component Descriptions</h3>
+
+    <p>
+      <strong>Intent Declaration Layer.</strong> Sits at the agent SDK or tool-call boundary. Accepts the agent's outbound action and requires attachment of the intent payload before forwarding. Stateless. Can be implemented as an SDK wrapper, a sidecar proxy, or an API gateway plugin. Blocks any invocation that does not carry a valid intent declaration.
+    </p>
+
+    <p>
+      <strong>DIRA Authorization Engine.</strong> The core decision service. Receives the declared intent payload alongside the action request. Runs two checks in parallel: scope verification against the configured resource policy, and behavioral verification against the predicted scope profile for the declared purpose. Returns a grant, a deny, or an anomaly signal with context.
+    </p>
+
+    <p>
+      <strong>Scope Check.</strong> Evaluates the action request against standard access control policy: role membership, attribute predicates, resource permissions. This is the existing authorization check that most systems already perform. DIRA does not replace it. It adds a second axis.
+    </p>
+
+    <p>
+      <strong>Behavior Check.</strong> Evaluates the predicted resource reach for the declared intent against the observed or requested scope. A summarization task has a predictable reach profile. A data export task has a different one. Divergence between declared purpose and actual scope reach triggers the anomaly signal path. The check does not need to classify intent as malicious to be useful. Detecting divergence is sufficient.
+    </p>
+
+    <p>
+      <strong>Anomaly Signal.</strong> Not a deny decision. Routes the invocation to a monitoring, escalation, or rate-limiting path while the scope check result is still evaluated. An anomaly on the behavior check does not automatically block the action, but it flags the session for elevated scrutiny and can feed session-level drift tracking. In high-trust environments, anomaly signals may trigger human-in-the-loop review.
+    </p>
+
+    <p>
+      <strong>Action Executes.</strong> The action reaches its target only when both checks pass. If the scope check denies, the action is blocked. If the behavior check signals an anomaly and policy dictates block-on-anomaly, the action is blocked. The target system sees no indication of a blocked request unless explicitly surfaced through an error response.
+    </p>
+  </div>
+</section>
+
+
+<!-- ===== IMPLEMENTATION ===== -->
+<section id="implementation">
+  <div class="container">
+    <span class="badge badge-400">400-Level</span>
+    <h2>Implementation Considerations</h2>
+
+    <p>
+      For practitioners building a DIRA-style system, the following sections address the key design decisions: what to put in the intent payload, where the enforcement point lives, what anomaly detection actually means in practice, and how to wire it into existing infrastructure.
+    </p>
+
+    <div class="impl-grid">
+
+      <div class="impl-card">
+        <h3>The Intent Declaration Payload <span class="tag">Schema</span></h3>
+        <p>
+          The payload must be machine-readable, signed by the agent identity, and immutable once declared. A minimal schema includes:
+        </p>
+        <div class="code-block">
+<span class="token-key">action_type</span>:      <span class="token-val">"read" | "write" | "transform" | "transmit"</span>
+<span class="token-key">target</span>:           <span class="token-val">"resource identifier or URI pattern"</span>
+<span class="token-key">declared_purpose</span>: <span class="token-val">"summarize" | "index" | "forward" | "archive" | ...</span>
+<span class="token-key">task_id</span>:          <span class="token-val">"originating task or session identifier"</span>
+<span class="token-key">principal_chain</span>: <span class="token-val">["orchestrator-svid", "subagent-svid"]</span>  <span class="token-comment"># SPIFFE SVIDs</span>
+<span class="token-key">scope_assertion</span>:  <span class="token-val">"predicted resource reach as set or pattern"</span>
+<span class="token-key">timestamp</span>:        <span class="token-val">"ISO-8601 with millisecond precision"</span>
+<span class="token-key">signature</span>:        <span class="token-val">"agent SVID signature over payload hash"</span>
+        </div>
+        <p>
+          The <code>principal_chain</code> field is critical for multi-agent systems. It carries the full delegation stack, not just the immediate caller. Each entry is a SPIFFE Verifiable Identity Document (SVID), making the chain cryptographically verifiable. The <code>scope_assertion</code> field is the agent's self-declared prediction of what resources it expects to touch. This is what the behavior check evaluates against observed reach.
+        </p>
+      </div>
+
+      <div class="impl-card">
+        <h3>Enforcement Point Placement <span class="tag">Architecture</span></h3>
+        <p>
+          The enforcement point must sit between the agent and the tool or API call. Three deployment patterns are viable:
+        </p>
+        <p>
+          <strong>SDK intercept.</strong> A wrapper around the agent's tool-calling library that attaches intent declarations and routes through the DIRA engine before dispatching. Works in environments where you control the agent code. Lowest latency, highest coverage.
+        </p>
+        <p>
+          <strong>Sidecar proxy.</strong> A lightweight sidecar container (or process) that intercepts all outbound calls from the agent process. Works for containerized agents without code modification. Requires network-level interception, similar to service mesh patterns. SPIFFE workload attestation integrates naturally here.
+        </p>
+        <p>
+          <strong>API gateway plugin.</strong> A plugin or policy layer at the API gateway that enforces intent declaration as a precondition for routing. Works well when agents access a bounded set of internal APIs. Less effective for arbitrary HTTP calls.
+        </p>
+        <p>
+          Regardless of deployment model, the enforcement point must be the only path to the target. Bypass routes defeat the control. This is the same architectural requirement as Zero Trust microsegmentation: if there is an uncontrolled path, the control does not exist.
+        </p>
+      </div>
+
+      <div class="impl-card">
+        <h3>What "Anomaly Signal" Means in Practice <span class="tag">Detection</span></h3>
+        <p>
+          The behavior check generates an anomaly signal when the observed or requested scope reach diverges from what the declared purpose predicts. This is not a classification problem and does not require a trained model to get started. A rule-based implementation is sufficient as a baseline:
+        </p>
+        <p>
+          A <code>summarize</code> action targeting three documents should not request read access to 300. A <code>forward</code> action with a declared target of an internal endpoint should not resolve an external domain. A <code>transform</code> action should not generate write traffic to a storage endpoint not listed in its scope assertion. These rules are deterministic and auditable.
+        </p>
+        <p>
+          At higher maturity, the behavior check can incorporate statistical baselines: the typical scope profile for a given agent identity and declared purpose type, derived from historical sessions. Deviation from the statistical baseline, rather than from a fixed rule, gives more sensitivity in complex environments where permitted scope is inherently variable.
+        </p>
+      </div>
+
+      <div class="impl-card">
+        <h3>Session-Level Drift Tracking <span class="tag">Detection</span></h3>
+        <p>
+          A single anomaly signal may be a false positive: an agent legitimately needing to access more resources than its initial scope assertion predicted. But a pattern of anomalies across a session, or a progressive drift in declared purpose versus observed reach over time, is a stronger signal than any individual check.
+        </p>
+        <p>
+          Session-level drift tracking maintains a per-session behavioral profile that accumulates the declared intent and observed scope for every action in the session. A session where declared purpose shifts from <code>summarize</code> to <code>index</code> to <code>transmit</code> in a short window, each check passing individually, may trigger a session-level alert even though no single check failed. The session context is what makes the pattern visible.
+        </p>
+        <p>
+          This is also the mechanism for detecting multi-step attacks: where a compromised agent proceeds through a sequence of legitimate-looking individual actions whose aggregate effect is unauthorized. No single invocation fails the DIRA check. The session drift check catches the pattern.
+        </p>
+      </div>
+
+      <div class="impl-card">
+        <h3>Integration with SPIFFE / SPIRE <span class="tag">Identity Plane</span></h3>
+        <p>
+          SPIFFE/SPIRE is the identity foundation that DIRA builds on top of, not a substitute for it. SPIFFE provides the cryptographic workload identity (SVID) that makes the <code>principal_chain</code> field in the intent payload verifiable. Without a reliable, attestation-backed identity for each agent in the delegation chain, the intent declaration cannot be trusted, because any agent could claim to be any other agent.
+        </p>
+        <p>
+          The integration pattern is: SPIRE attests the workload and issues an SVID. The agent holds its SVID in-memory via the Workload API. When constructing an intent declaration, the agent signs the payload with its SVID private key. The DIRA engine verifies the signature against the SPIFFE trust bundle before processing the authorization check. This ensures the declared intent comes from the claimed principal.
+        </p>
+        <p>
+          For multi-agent delegation chains, each agent in the chain signs and appends its SVID to the <code>principal_chain</code> array. The DIRA engine validates the entire chain, not just the immediate caller. This is the mechanism that closes the principal confusion problem: every delegation hop is cryptographically accounted for.
+        </p>
+      </div>
+
+    </div>
+
+    <!-- Research Status -->
+    <h3 style="margin-top: 3rem; margin-bottom: 0.5rem;">Research Status and Open Questions</h3>
+    <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 1.5rem;">
+      This is active independent research. DIRA is not a ratified standard, a published specification, or a vendored product. It is a framework developed through analysis of existing authorization models and the specific failure modes they exhibit in agentic AI contexts. The following questions remain open and would benefit from empirical implementation work.
+    </p>
+
+    <div class="status-box">
+      <h3>Open Research Questions</h3>
+      <ul class="open-questions">
+        <li>How should the scope assertion in the intent payload be structured for agents operating in open-ended task contexts where resource reach is genuinely unpredictable at declaration time?</li>
+        <li>What is the minimum viable behavioral baseline for a new agent identity with no historical session data? How should cold-start risk be managed?</li>
+        <li>How should the DIRA engine handle intent declaration for agent-to-agent calls where the downstream agent does not yet support the declaration protocol?</li>
+        <li>What is the appropriate escalation path when the behavior check signals an anomaly in a fully autonomous pipeline with no human in the loop?</li>
+        <li>Can session-level drift detection be implemented without creating new privacy risks through behavioral profiling of agent sessions that may carry user data?</li>
+        <li>How does DIRA interact with prompt injection attacks, where an adversary attempts to override a legitimate agent's declared intent through injected instructions in retrieved content?</li>
+        <li>What implementation evidence would validate or falsify the core dual-verification claim: that checking declared intent against observed scope catch meaningfully different threats than scope checking alone?</li>
+      </ul>
+    </div>
+
+    <p style="margin-top: 1.5rem; font-size: 0.92rem; color: var(--text);">
+      Implementations that test these questions, whether confirming or challenging the framework, are the most valuable contributions the research community can make to this problem space. The framework is not an answer. It is a structured way of asking the right questions.
+    </p>
+  </div>
+</section>
+
+
+<!-- ===== FOOTER ===== -->
+<footer>
+  <div class="container">
+    <div class="footer-brand">cyberdaemon.ai</div>
+    <div class="footer-attr">
+      DIRA is independent research. Not affiliated with or endorsed by any standards body.<br />
+      Views expressed here are the author's own and do not represent any employer.<br />
+      This is an independent educational resource.
+    </div>
+    <div class="footer-attr" style="border-top: 1px solid var(--border); padding-top: 1rem; margin-top: 0.5rem;">
+      <a href="https://cyberdaemon.ai">cyberdaemon.ai</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
