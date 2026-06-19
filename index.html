@@ -9,6 +9,8 @@
   <meta name="description" content="DIRA is an independent research framework for runtime behavioral authorization in agentic AI systems. Explores why RBAC, ABAC, and existing frameworks fail to address intent-vs-action divergence in autonomous agents." />
   <meta name="keywords" content="dual-intent runtime authorization, DIRA, agentic AI security, behavioral authorization, AI agent access control, runtime authorization, AI governance, intent verification, principal confusion, multi-agent delegation" />
   <link rel="canonical" href="https://dira.cyberdaemon.ai" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,700;1,8..60,700&family=IBM+Plex+Mono:wght@300;400;500;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
@@ -44,30 +46,30 @@
   <style>
     /* ===== DESIGN TOKENS ===== */
     :root {
-      --bg:           #0a0a0f;
-      --bg-surface:   #0f0f1a;
-      --bg-card:      #131320;
-      --bg-card-alt:  #161626;
-      --border:       #1e1e35;
-      --border-accent:#2a2a4a;
-      --accent:       #6c63ff;
-      --accent-dim:   #4a44cc;
-      --accent-glow:  rgba(108, 99, 255, 0.15);
-      --accent-2:     #00d4aa;
-      --accent-2-dim: rgba(0, 212, 170, 0.12);
+      --bg:           #0b0d11;
+      --bg-surface:   #111520;
+      --bg-card:      #111520;
+      --bg-card-alt:  #171b28;
+      --border:       #1e2230;
+      --border-accent:#282d40;
+      --accent:       #c9a84c;
+      --accent-dim:   #8a6a24;
+      --accent-glow:  rgba(201, 168, 76, 0.15);
+      --accent-2:     #00c8a0;
+      --accent-2-dim: rgba(0, 200, 160, 0.12);
       --warn:         #ff6b6b;
       --warn-dim:     rgba(255, 107, 107, 0.12);
-      --text:         #e6edf3;
-      --text-secondary: #9ca3b0;
-      --text-muted:   #545868;
-      --badge-200:    #1a3a2a;
-      --badge-200-text: #4adf8a;
+      --text:         #e0ddef;
+      --text-secondary: #8a8aaa;
+      --text-muted:   #54546e;
+      --badge-200:    #041e18;
+      --badge-200-text: #00c8a0;
       --badge-300:    #1a2a3a;
-      --badge-300-text: #4ac8df;
+      --badge-300-text: #4ab4d4;
       --badge-400:    #2a1a3a;
       --badge-400-text: #b46adf;
-      --mono:         "Courier New", "Consolas", monospace;
-      --sans:         -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --mono:         'IBM Plex Mono', 'Courier New', monospace;
+      --sans:         'Inter', system-ui, sans-serif;
       --nav-h:        56px;
     }
 
@@ -76,6 +78,10 @@
     html { scroll-behavior: smooth; }
     body {
       background: var(--bg);
+      background-image:
+        linear-gradient(rgba(0,200,160,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,200,160,0.025) 1px, transparent 1px);
+      background-size: 40px 40px;
       color: var(--text);
       font-family: var(--sans);
       font-size: 17px;
@@ -93,7 +99,7 @@
       top: 0;
       z-index: 100;
       height: var(--nav-h);
-      background: rgba(10, 10, 15, 0.94);
+      background: rgba(11, 13, 17, 0.92);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
@@ -178,10 +184,12 @@
     /* ===== TYPOGRAPHY ===== */
     h1, h2, h3, h4 { line-height: 1.25; color: var(--text); }
     h2 {
+      font-family: 'Source Serif 4', Georgia, serif;
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 1.5rem;
       letter-spacing: -0.02em;
+      color: var(--accent);
     }
     h3 {
       font-size: 1.15rem;
@@ -200,12 +208,13 @@
       margin-bottom: 1.5rem;
     }
     .hero-title {
+      font-family: 'Source Serif 4', Georgia, serif;
       font-size: clamp(2.6rem, 5.5vw, 4rem);
-      font-weight: 800;
+      font-weight: 700;
       letter-spacing: -0.03em;
       line-height: 1.1;
       margin-bottom: 1rem;
-      background: linear-gradient(135deg, #e6edf3 0%, #a0a8c0 100%);
+      background: linear-gradient(135deg, #d4a84c 0%, #e8c870 50%, #c9a84c 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
@@ -350,7 +359,7 @@
     }
     tbody tr { border-bottom: 1px solid var(--border); transition: background 0.15s; }
     tbody tr:last-child { border-bottom: none; }
-    tbody tr:hover { background: rgba(108, 99, 255, 0.04); }
+    tbody tr:hover { background: rgba(201, 168, 76, 0.04); }
     tbody td {
       padding: 0.82rem 1rem;
       color: var(--text);
@@ -664,7 +673,7 @@
   <div class="nav-right" aria-label="cyberdaemon.ai properties">
     <a href="https://cyberdaemon.ai">cyberdaemon.ai</a>
     <span class="sep">·</span>
-    <a href="https://governance.cyberdaemon.ai">governance</a>
+    <a href="https://ai-ai-governance.cyberdaemon.ai">governance</a>
     <span class="sep">·</span>
     <a href="https://harnesses.cyberdaemon.ai">harnesses</a>
     <span class="sep">·</span>
@@ -894,58 +903,58 @@
             <polygon points="0 0, 8 3, 0 6" fill="#545868" />
           </marker>
           <marker id="arrowhead-accent" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-            <polygon points="0 0, 8 3, 0 6" fill="#6c63ff" />
+            <polygon points="0 0, 8 3, 0 6" fill="#c9a84c" />
           </marker>
           <marker id="arrowhead-teal" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-            <polygon points="0 0, 8 3, 0 6" fill="#00d4aa" />
+            <polygon points="0 0, 8 3, 0 6" fill="#00c8a0" />
           </marker>
           <marker id="arrowhead-warn" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
             <polygon points="0 0, 8 3, 0 6" fill="#ff6b6b" />
           </marker>
           <marker id="arrowhead-green" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
-            <polygon points="0 0, 8 3, 0 6" fill="#4adf8a" />
+            <polygon points="0 0, 8 3, 0 6" fill="#00c8a0" />
           </marker>
         </defs>
 
         <!-- ====== LAYER BANDS ====== -->
         <!-- Identity Plane band -->
-        <rect x="10" y="10" width="720" height="90" rx="6" fill="rgba(108,99,255,0.05)" stroke="#2a2a4a" stroke-width="1"/>
-        <text x="22" y="30" font-family="Courier New, monospace" font-size="10" fill="#545868" letter-spacing="1" text-anchor="start" text-transform="uppercase">IDENTITY PLANE</text>
+        <rect x="10" y="10" width="720" height="90" rx="6" fill="rgba(201,168,76,0.05)" stroke="#282d40" stroke-width="1"/>
+        <text x="22" y="30" font-family="IBM Plex Mono, Courier New, monospace" font-size="10" fill="#54546e" letter-spacing="1" text-anchor="start" text-transform="uppercase">IDENTITY PLANE</text>
 
         <!-- Intent Layer band -->
-        <rect x="10" y="110" width="720" height="90" rx="6" fill="rgba(0,212,170,0.05)" stroke="#1e2e2a" stroke-width="1"/>
-        <text x="22" y="130" font-family="Courier New, monospace" font-size="10" fill="#545868" letter-spacing="1">INTENT LAYER</text>
+        <rect x="10" y="110" width="720" height="90" rx="6" fill="rgba(0,200,160,0.05)" stroke="#1e2230" stroke-width="1"/>
+        <text x="22" y="130" font-family="IBM Plex Mono, Courier New, monospace" font-size="10" fill="#54546e" letter-spacing="1">INTENT LAYER</text>
 
         <!-- Enforcement Point band -->
-        <rect x="10" y="210" width="720" height="190" rx="6" fill="rgba(108,99,255,0.07)" stroke="#2a2a4a" stroke-width="1"/>
-        <text x="22" y="230" font-family="Courier New, monospace" font-size="10" fill="#545868" letter-spacing="1">ENFORCEMENT POINT</text>
+        <rect x="10" y="210" width="720" height="190" rx="6" fill="rgba(201,168,76,0.07)" stroke="#282d40" stroke-width="1"/>
+        <text x="22" y="230" font-family="IBM Plex Mono, Courier New, monospace" font-size="10" fill="#54546e" letter-spacing="1">ENFORCEMENT POINT</text>
 
         <!-- Execution Layer band -->
-        <rect x="10" y="410" width="720" height="130" rx="6" fill="rgba(74,223,138,0.05)" stroke="#1a3a2a" stroke-width="1"/>
-        <text x="22" y="430" font-family="Courier New, monospace" font-size="10" fill="#545868" letter-spacing="1">EXECUTION LAYER</text>
+        <rect x="10" y="410" width="720" height="130" rx="6" fill="rgba(0,200,160,0.05)" stroke="#1e2230" stroke-width="1"/>
+        <text x="22" y="430" font-family="IBM Plex Mono, Courier New, monospace" font-size="10" fill="#54546e" letter-spacing="1">EXECUTION LAYER</text>
 
         <!-- ====== NODES ====== -->
 
         <!-- Agent box (identity plane) -->
-        <rect x="290" y="32" width="160" height="50" rx="6" fill="#131320" stroke="#6c63ff" stroke-width="1.5"/>
-        <text x="370" y="54" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#6c63ff" text-anchor="middle">Agent</text>
-        <text x="370" y="71" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">SPIFFE SVID holder</text>
+        <rect x="290" y="32" width="160" height="50" rx="6" fill="#111520" stroke="#c9a84c" stroke-width="1.5"/>
+        <text x="370" y="54" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#c9a84c" text-anchor="middle">Agent</text>
+        <text x="370" y="71" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">SPIFFE SVID holder</text>
 
         <!-- Arrow: Agent -> IDL -->
         <line x1="370" y1="82" x2="370" y2="108" stroke="#545868" stroke-width="1.5" marker-end="url(#arrowhead)"/>
 
         <!-- Intent Declaration Layer -->
-        <rect x="240" y="128" width="260" height="54" rx="6" fill="#0f1a17" stroke="#00d4aa" stroke-width="1.5"/>
-        <text x="370" y="150" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#00d4aa" text-anchor="middle">Intent Declaration Layer</text>
-        <text x="370" y="168" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">action_type · target · declared_purpose · principal_chain</text>
+        <rect x="240" y="128" width="260" height="54" rx="6" fill="#041e18" stroke="#00c8a0" stroke-width="1.5"/>
+        <text x="370" y="150" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#00c8a0" text-anchor="middle">Intent Declaration Layer</text>
+        <text x="370" y="168" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">action_type · target · declared_purpose · principal_chain</text>
 
         <!-- Arrow: IDL -> DIRA Engine -->
         <line x1="370" y1="182" x2="370" y2="238" stroke="#545868" stroke-width="1.5" marker-end="url(#arrowhead)"/>
 
         <!-- DIRA Authorization Engine -->
-        <rect x="220" y="240" width="300" height="54" rx="6" fill="#14133a" stroke="#6c63ff" stroke-width="2"/>
-        <text x="370" y="263" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="14" font-weight="700" fill="#6c63ff" text-anchor="middle">DIRA Authorization Engine</text>
-        <text x="370" y="281" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">dual-verification · policy evaluation · session context</text>
+        <rect x="220" y="240" width="300" height="54" rx="6" fill="#14100a" stroke="#c9a84c" stroke-width="2"/>
+        <text x="370" y="263" font-family="Inter, system-ui, sans-serif" font-size="14" font-weight="700" fill="#c9a84c" text-anchor="middle">DIRA Authorization Engine</text>
+        <text x="370" y="281" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">dual-verification · policy evaluation · session context</text>
 
         <!-- Forking lines from Engine -->
         <!-- Left fork to Scope Check -->
@@ -954,54 +963,54 @@
         <line x1="430" y1="294" x2="550" y2="330" stroke="#545868" stroke-width="1.5" marker-end="url(#arrowhead-warn)"/>
 
         <!-- Scope Check box -->
-        <rect x="80" y="330" width="200" height="50" rx="6" fill="#0f1a17" stroke="#00d4aa" stroke-width="1.5"/>
-        <text x="180" y="352" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#00d4aa" text-anchor="middle">Scope Check</text>
-        <text x="180" y="370" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">role · attribute · resource policy</text>
+        <rect x="80" y="330" width="200" height="50" rx="6" fill="#041e18" stroke="#00c8a0" stroke-width="1.5"/>
+        <text x="180" y="352" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#00c8a0" text-anchor="middle">Scope Check</text>
+        <text x="180" y="370" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">role · attribute · resource policy</text>
 
         <!-- Behavior Check box -->
         <rect x="460" y="330" width="200" height="50" rx="6" fill="#1a0f0f" stroke="#ff6b6b" stroke-width="1.5"/>
-        <text x="560" y="352" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="600" fill="#ff6b6b" text-anchor="middle">Behavior Check</text>
-        <text x="560" y="370" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">declared intent vs. observed reach</text>
+        <text x="560" y="352" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="600" fill="#ff6b6b" text-anchor="middle">Behavior Check</text>
+        <text x="560" y="370" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">declared intent vs. observed reach</text>
 
         <!-- Scope Check -> Grant/Deny -->
-        <line x1="180" y1="380" x2="180" y2="430" stroke="#4adf8a" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+        <line x1="180" y1="380" x2="180" y2="430" stroke="#00c8a0" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
 
         <!-- Behavior Check -> Anomaly Signal -->
         <line x1="560" y1="380" x2="560" y2="430" stroke="#ff6b6b" stroke-width="1.5" marker-end="url(#arrowhead-warn)"/>
 
         <!-- Grant / Deny box -->
-        <rect x="80" y="432" width="200" height="50" rx="6" fill="#1a3a2a" stroke="#4adf8a" stroke-width="1.5"/>
-        <text x="180" y="455" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#4adf8a" text-anchor="middle">Grant / Deny</text>
-        <text x="180" y="472" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">blocks action on deny</text>
+        <rect x="80" y="432" width="200" height="50" rx="6" fill="#041e18" stroke="#00c8a0" stroke-width="1.5"/>
+        <text x="180" y="455" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#00c8a0" text-anchor="middle">Grant / Deny</text>
+        <text x="180" y="472" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">blocks action on deny</text>
 
         <!-- Anomaly Signal box -->
         <rect x="460" y="432" width="200" height="50" rx="6" fill="#1a0f0f" stroke="#ff6b6b" stroke-width="1.5"/>
-        <text x="560" y="455" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#ff6b6b" text-anchor="middle">Anomaly Signal</text>
-        <text x="560" y="472" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">escalate · rate-limit · human review</text>
+        <text x="560" y="455" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#ff6b6b" text-anchor="middle">Anomaly Signal</text>
+        <text x="560" y="472" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">escalate · rate-limit · human review</text>
 
         <!-- Grant -> Action Executes -->
-        <line x1="180" y1="482" x2="310" y2="500" stroke="#4adf8a" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
+        <line x1="180" y1="482" x2="310" y2="500" stroke="#00c8a0" stroke-width="1.5" marker-end="url(#arrowhead-green)"/>
 
         <!-- Anomaly -> Action Executes (when policy allows) -->
         <line x1="460" y1="482" x2="425" y2="500" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="4,3" marker-end="url(#arrowhead-warn)"/>
 
         <!-- Action Executes box (execution layer) -->
-        <rect x="270" y="490" width="200" height="50" rx="6" fill="#131320" stroke="#6c63ff" stroke-width="1.5"/>
-        <text x="370" y="513" font-family="-apple-system, BlinkMacSystemFont, Segoe UI, sans-serif" font-size="13" font-weight="700" fill="#6c63ff" text-anchor="middle">Action Executes</text>
-        <text x="370" y="530" font-family="Courier New, monospace" font-size="9" fill="#545868" text-anchor="middle">tool · API · resource</text>
+        <rect x="270" y="490" width="200" height="50" rx="6" fill="#111520" stroke="#c9a84c" stroke-width="1.5"/>
+        <text x="370" y="513" font-family="Inter, system-ui, sans-serif" font-size="13" font-weight="700" fill="#c9a84c" text-anchor="middle">Action Executes</text>
+        <text x="370" y="530" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e" text-anchor="middle">tool · API · resource</text>
 
         <!-- Legend -->
-        <rect x="10" y="548" width="720" height="1" fill="#1e1e35"/>
-        <circle cx="30" cy="557" r="4" fill="rgba(108,99,255,0.4)" stroke="#6c63ff" stroke-width="1"/>
-        <text x="40" y="561" font-family="Courier New, monospace" font-size="9" fill="#545868">DIRA core</text>
-        <circle cx="130" cy="557" r="4" fill="rgba(0,212,170,0.2)" stroke="#00d4aa" stroke-width="1"/>
-        <text x="140" y="561" font-family="Courier New, monospace" font-size="9" fill="#545868">intent / scope</text>
+        <rect x="10" y="548" width="720" height="1" fill="#1e2230"/>
+        <circle cx="30" cy="557" r="4" fill="rgba(201,168,76,0.4)" stroke="#c9a84c" stroke-width="1"/>
+        <text x="40" y="561" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e">DIRA core</text>
+        <circle cx="130" cy="557" r="4" fill="rgba(0,200,160,0.2)" stroke="#00c8a0" stroke-width="1"/>
+        <text x="140" y="561" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e">intent / scope</text>
         <circle cx="240" cy="557" r="4" fill="rgba(255,107,107,0.2)" stroke="#ff6b6b" stroke-width="1"/>
-        <text x="250" y="561" font-family="Courier New, monospace" font-size="9" fill="#545868">behavioral detection</text>
-        <circle cx="380" cy="557" r="4" fill="rgba(74,223,138,0.2)" stroke="#4adf8a" stroke-width="1"/>
-        <text x="390" y="561" font-family="Courier New, monospace" font-size="9" fill="#545868">authorized execution</text>
+        <text x="250" y="561" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e">behavioral detection</text>
+        <circle cx="380" cy="557" r="4" fill="rgba(0,200,160,0.2)" stroke="#00c8a0" stroke-width="1"/>
+        <text x="390" y="561" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e">authorized execution</text>
         <line x1="490" y1="557" x2="520" y2="557" stroke="#ff6b6b" stroke-width="1" stroke-dasharray="4,3"/>
-        <text x="528" y="561" font-family="Courier New, monospace" font-size="9" fill="#545868">conditional path</text>
+        <text x="528" y="561" font-family="IBM Plex Mono, Courier New, monospace" font-size="9" fill="#54546e">conditional path</text>
       </svg>
     </div>
 
@@ -1239,11 +1248,11 @@
     <!-- Score panel (hidden until all 5 answered) -->
     <div class="score-panel" id="score-panel">
       <svg class="score-ring" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="45" cy="45" r="38" fill="none" stroke="#1e1e35" stroke-width="8"/>
-        <circle id="score-arc" cx="45" cy="45" r="38" fill="none" stroke="#6c63ff" stroke-width="8"
+        <circle cx="45" cy="45" r="38" fill="none" stroke="#1e2230" stroke-width="8"/>
+        <circle id="score-arc" cx="45" cy="45" r="38" fill="none" stroke="#c9a84c" stroke-width="8"
           stroke-dasharray="238.76" stroke-dashoffset="238.76"
           stroke-linecap="round" transform="rotate(-90 45 45)"/>
-        <text id="score-num" x="45" y="51" text-anchor="middle" font-family="-apple-system, sans-serif" font-size="22" font-weight="800" fill="#e6edf3">0</text>
+        <text id="score-num" x="45" y="51" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="22" font-weight="800" fill="#e0ddef">0</text>
       </svg>
       <p class="score-heading" id="score-heading">Your DIRA Readiness Score</p>
       <p class="score-sub" id="score-sub"></p>
@@ -1262,7 +1271,7 @@
     <nav class="footer-nav" aria-label="cyberdaemon.ai properties">
       <a href="https://cyberdaemon.ai">cyberdaemon.ai</a>
       <span class="sep">·</span>
-      <a href="https://governance.cyberdaemon.ai">governance</a>
+      <a href="https://ai-ai-governance.cyberdaemon.ai">governance</a>
       <span class="sep">·</span>
       <a href="https://harnesses.cyberdaemon.ai">harnesses</a>
       <span class="sep">·</span>
@@ -1371,7 +1380,7 @@
 
     let arcColor, headingText, subText;
     if (pct >= 0.8) {
-      arcColor = '#4adf8a'; headingText = 'Strong alignment with DIRA principles';
+      arcColor = '#00c8a0'; headingText = 'Strong alignment with DIRA principles';
       subText = 'Your system covers most of the behavioral authorization surface. Review the remaining gaps below.';
     } else if (pct >= 0.5) {
       arcColor = '#ffa940'; headingText = 'Partial alignment with DIRA principles';
